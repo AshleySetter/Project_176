@@ -102,9 +102,9 @@ CreditsX=Screen_Width+100
 pygame.mouse.set_visible(0) #Hide mouse cursor
 
 #import images & Sounds-------------------------------------------------------------------------------
-Background = pygame.image.load('gameAssets/NGCM_Board_rescaled.jpg').convert()
+Background = pygame.image.load('gameAssets/Board_rescaled.jpg').convert()
 
-Background_Ocean = pygame.image.load('gameAssets/NGCM_Board.jpg').convert()
+Background_Ocean = pygame.image.load('gameAssets/Board.jpg').convert()
 
 Player_mid = pygame.image.load('gameAssets/player.jpeg').convert()
 #Player_mid.set_colorkey(white) 
