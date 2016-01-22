@@ -102,30 +102,30 @@ CreditsX=Screen_Width+100
 pygame.mouse.set_visible(0) #Hide mouse cursor
 
 #import images & Sounds-------------------------------------------------------------------------------
-Background = pygame.image.load('gameAssets_NGCM/NGCM_Board_rescaled.jpg').convert()
+Background = pygame.image.load('gameAssets/NGCM_Board_rescaled.jpg').convert()
 
-Background_Ocean = pygame.image.load('gameAssets_NGCM/NGCM_Board.jpg').convert()
+Background_Ocean = pygame.image.load('gameAssets/NGCM_Board.jpg').convert()
 
-Player_mid = pygame.image.load('gameAssets_NGCM/player.jpeg').convert()
+Player_mid = pygame.image.load('gameAssets/player.jpeg').convert()
 #Player_mid.set_colorkey(white) 
 Player_mid.set_colorkey(black) 
 #Player_midx2 = pygame.transform.scale2x(Player_mid)
 Player_midx2 = Player_mid
 
-Coursework_model1 = pygame.image.load('gameAssets_NGCM/Coursework.jpeg').convert()
+Coursework_model1 = pygame.image.load('gameAssets/Coursework.jpeg').convert()
 Coursework_model1.set_colorkey(black)
 
 #Coursework_model2 = pygame.image.load('gameAssets/PinkCoursework.png').convert()
 #Coursework_model2.set_colorkey(black) 
 
-Ian = pygame.image.load('gameAssets_NGCM/ian.jpg').convert()
+Ian = pygame.image.load('gameAssets/ian.jpg').convert()
 Ian.set_colorkey(black) 
 
 Player_Player = Player_midx2 #initialises Player_Player (i.e. the player character equal to upright player)
 
 
 #setting background music/sound
-pygame.mixer.music.load('gameAssets_NGCM/Keyboard_Typing_Sound_Effect.mp3')
+pygame.mixer.music.load('gameAssets/Keyboard_Typing_Sound_Effect.mp3')
 pygame.mixer.music.set_endevent(pygame.constants.USEREVENT)
 pygame.mixer.music.play()
 
@@ -145,7 +145,7 @@ while not done: #while loop continues while true (i.e. while not false)
         elif event.type == pygame.constants.USEREVENT:
             pygame.mixer.music.play()
             if FadeoutFlag == 1:
-                pygame.mixer.music.load('gameAssets_NGCM/51195__the-bizniss__flute-riff.wav')
+                pygame.mixer.music.load('gameAssets/51195__the-bizniss__flute-riff.wav')
                 pygame.mixer.music.play()
 
             #this whole if multiplexer facilitates movement of player character and sets orientation of player character
