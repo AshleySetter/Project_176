@@ -5,47 +5,44 @@ import numpy as np
 
 #define objects
 class Coursework:
-    'Base class for all jewels'
-    jewelCount = 0 #the variable jewelCount is a class variable whose value is shared among all instances of this class. It can be accessed as Coursework.jewelCount from inside or outside the class (NOT static)
+    'Base class for all courseworks'
+    courseworkCount = 0 #the variable courseworkCount is a class variable whose value is shared among all instances of this class. It can be accessed as Coursework.courseworkCount from inside or outside the class (NOT static)
 
     def __init__(self): #CourseworkNo):
-        Coursework.jewelCount += 1 #keeps track of current no of jewel
-        self.exists = 1  #set flag to say that jewel exists and has not been "popped"
+        Coursework.courseworkCount += 1 #keeps track of current no of coursework
+        self.exists = 1  #set flag to say that coursework exists and has not been "popped"
 
-    def SpawnCourseworkPosn(self, Screen_Width, Screen_Height): #sets a random spawn position for the jewel
+    def SpawnCourseworkPosn(self, Screen_Width, Screen_Height): #sets a random spawn position for the coursework
         offset = 50
         # self.x = random.randrange(0+offset,Screen_Width-offset)
         # self.y = random.randrange(-Screen_Height,-50) 
         self.x = Screen_Width/2.
         self.y = 0
-        self.vx = np.random.normal(0, 3)
+        self.velocity_x = np.random.normal(0, 3)
 
         noOfCourseworkTypes = 1
         self.CourseworkSelect = random.randrange(0,noOfCourseworkTypes) #generates random int between 0 and noOfCourseworkTypes (not including noOfCourseworkTypes!)
         #print self.CourseworkSelect
         #print "Setting Coursework spawn position at:" , self.x, self.y
     
-    def returnPosn(self): #function to return the jewel's position
+    def returnPosn(self): #function to return the coursework's position
         return self.x, self.y 
 
-    def jewelPop(self):
-        #sets deleted flag and decrements jewelCount
-        Coursework.jewelCount -= 1
+    def courseworkPop(self):
+        #sets deleted flag and decrements courseworkCount
+        Coursework.courseworkCount -= 1
         self.exists = 0
         global GameScore
         GameScore+=1
-        global PopSound
         global WinScore
-        #if GameScore < WinScore:
-        #    PopSound.play()
 
-    def jewelBurst(self):
-        #sets deleted flag and decrements jewelCount
-        Coursework.jewelCount -= 1
+    def courseworkBurst(self):
+        #sets deleted flag and decrements courseworkCount
+        Coursework.courseworkCount -= 1
         self.exists = 0
 
 #define functions
-def MakeCoursework(CourseworkList, Screen_Width, Screen_Height): #function to create an instance of class jewel and run the spawnCourseworkPosn function and increment the TotalCourseworkNo which states how many jewels have been created
+def MakeCoursework(CourseworkList, Screen_Width, Screen_Height): #function to create an instance of class coursework and run the spawnCourseworkPosn function and increment the TotalCourseworkNo which states how many courseworks have been created
     global TotalCourseworkNo
     #tempCourseworkIntance = Coursework()
     CourseworkList.append(Coursework())
@@ -79,26 +76,26 @@ pygame.display.set_caption("NGCM Simulation and Modelling - The Game") #sets gam
 pi = 3.141592653
 
 GameScore = 0
-WinScore = 100
+WinScore = 1
 FadeoutFlag = 0
 Incr1 = 0
 Incr2 = 0
 TimeSinceLastCoursework = 0
 FrameRate=30
 
-CourseworkList=[]  #list containing instances of jewel class
-TotalCourseworkNo = 0 #initialises total no of jewels which have existed to 0
+CourseworkList=[]  #list containing instances of coursework class
+TotalCourseworkNo = 0 #initialises total no of courseworks which have existed to 0
 
-x_speed = 0 #initialises mermaid to be stationary
+x_speed = 0 #initialises player to be stationary
 y_speed = 0
 
-speedChange = 4 #sets speed of mermaid movement
+speedChange = 4 #sets speed of player movement
 
 x_coord = Screen_Width/2 #start in middle of screen
 y_coord = Screen_Height/2
 
-horizFlag = 0 #flag for if mermaid is moving left/right (-1/1)
-vertFlag = 0  #flag for if mermaid is moving up or not moving/down (0/-1)
+horizFlag = 0 #flag for if player is moving left/right (-1/1)
+vertFlag = 0  #flag for if player is moving up or not moving/down (0/-1)
 
 CreditsX=Screen_Width+100
 
@@ -109,29 +106,23 @@ Background = pygame.image.load('gameAssets_NGCM/NGCM_Board_rescaled.jpg').conver
 
 Background_Ocean = pygame.image.load('gameAssets_NGCM/NGCM_Board.jpg').convert()
 
-EvilCrab_image = pygame.image.load('gameAssets/Evil_Crab5.png').convert()
-EvilCrab_image.set_colorkey(white) #sets a particlar colour to be transparent!!!! 
-EvilCrabx2 = pygame.transform.scale2x(EvilCrab_image) #scales crab up by factor of 2
-
-#Player_mid = pygame.image.load('gameAssets/Player2_mid.png').convert()
 Player_mid = pygame.image.load('gameAssets_NGCM/player.jpeg').convert()
 #Player_mid.set_colorkey(white) 
 Player_mid.set_colorkey(black) 
 #Player_midx2 = pygame.transform.scale2x(Player_mid)
 Player_midx2 = Player_mid
 
-BlueCoursework = pygame.image.load('gameAssets_NGCM/Coursework.jpeg').convert()
-BlueCoursework.set_colorkey(black)
+Coursework_model1 = pygame.image.load('gameAssets_NGCM/Coursework.jpeg').convert()
+Coursework_model1.set_colorkey(black)
 
-#PinkCoursework = pygame.image.load('gameAssets/PinkCoursework.png').convert()
-#PinkCoursework.set_colorkey(black) 
+#Coursework_model2 = pygame.image.load('gameAssets/PinkCoursework.png').convert()
+#Coursework_model2.set_colorkey(black) 
 
 Ian = pygame.image.load('gameAssets_NGCM/ian.jpg').convert()
 Ian.set_colorkey(black) 
 
-Player_Player = Player_midx2 #initialises Player_Player (i.e. the player character equal to upright mermaid)
+Player_Player = Player_midx2 #initialises Player_Player (i.e. the player character equal to upright player)
 
-PopSound = pygame.mixer.Sound("gameAssets/66136__theta4__ding30603-spedup.wav")
 
 #setting background music/sound
 pygame.mixer.music.load('gameAssets_NGCM/Keyboard_Typing_Sound_Effect.mp3')
@@ -154,7 +145,7 @@ while not done: #while loop continues while true (i.e. while not false)
         elif event.type == pygame.constants.USEREVENT:
             pygame.mixer.music.play()
             if FadeoutFlag == 1:
-                pygame.mixer.music.load('gameAssets/51195__the-bizniss__flute-riff.wav')
+                pygame.mixer.music.load('gameAssets_NGCM/51195__the-bizniss__flute-riff.wav')
                 pygame.mixer.music.play()
 
             #this whole if multiplexer facilitates movement of player character and sets orientation of player character
@@ -213,7 +204,7 @@ while not done: #while loop continues while true (i.e. while not false)
     x_rightcoord = x_coord + Player_Size[0]
     y_downcoord = y_coord + Player_Size[1] 
     
-#this if multiplexer constrains mermaid player to the screen
+#this if multiplexer constrains player player to the screen
     if x_coord < 0:
         x_coord = 0
     elif x_rightcoord > Screen_Width-1:
@@ -224,36 +215,36 @@ while not done: #while loop continues while true (i.e. while not false)
         y_coord = Screen_Height-1-Player_Size[1]
         
     TimeSinceLastCoursework += 1
-    if(Coursework.jewelCount < 10 and TimeSinceLastCoursework > 10): #sets max no of jewels which can be onscreen at once
+    if(Coursework.courseworkCount < 10 and TimeSinceLastCoursework > 10): #sets max no of courseworks which can be onscreen at once
         MakeCoursework(CourseworkList, Screen_Width, Screen_Height) 
         TimeSinceLastCoursework = 0
 
     #if GameScore < WinScore :
-    for jewel in CourseworkList: #loops through list of instances of Coursework class
-        if jewel.exists == 1: #if jewel hasn't been 'popped'
-            Courseworkx = jewel.returnPosn()[0]
-            Courseworky = jewel.returnPosn()[1]
-            if jewel.CourseworkSelect == 0:
-                BlueCourseworkSize = BlueCoursework.get_rect().size
-                if Courseworkx+BlueCourseworkSize[0]/2 > x_coord and Courseworkx+BlueCourseworkSize[0]/2 < x_rightcoord and Courseworky+BlueCourseworkSize[1]/2 > y_coord and Courseworky+BlueCourseworkSize[1]/2 < y_downcoord: #checks if mermaid hitbox is over jewel co-ords
-                    jewel.jewelPop() #pops jewel if collision is detected
-            elif jewel.CourseworkSelect == 1:
-                PinkCourseworkSize = PinkCoursework.get_rect().size
-                if Courseworkx+PinkCourseworkSize[0]/2 > x_coord and Courseworkx+PinkCourseworkSize[0]/2 < x_rightcoord and Courseworky+PinkCourseworkSize[1]/2 > y_coord and Courseworky+PinkCourseworkSize[1]/2 < y_downcoord: #checks if mermaid hitbox is over jewel co-ords
-                    jewel.jewelPop() #pops jewel if collision is detected
+    for coursework in CourseworkList: #loops through list of instances of Coursework class
+        if coursework.exists == 1: #if coursework hasn't been 'popped'
+            Courseworkx = coursework.returnPosn()[0]
+            Courseworky = coursework.returnPosn()[1]
+            if coursework.CourseworkSelect == 0:
+                Coursework_model1_Size = Coursework_model1.get_rect().size
+                if Courseworkx+Coursework_model1_Size[0]/2 > x_coord and Courseworkx+Coursework_model1_Size[0]/2 < x_rightcoord and Courseworky+Coursework_model1_Size[1]/2 > y_coord and Courseworky+Coursework_model1_Size[1]/2 < y_downcoord: #checks if player hitbox is over coursework co-ords
+                    coursework.courseworkPop() #pops coursework if collision is detected
+            elif coursework.CourseworkSelect == 1:
+                Coursework_model2_Size = Coursework_model2.get_rect().size
+                if Courseworkx+Coursework_model2_Size[0]/2 > x_coord and Courseworkx+Coursework_model2_Size[0]/2 < x_rightcoord and Courseworky+PinkCoursework_model2_Size[1]/2 > y_coord and Courseworky+Coursework_model2_Size[1]/2 < y_downcoord: #checks if player hitbox is over coursework co-ords
+                    coursework.courseworkPop() #pops coursework if collision is detected
             if Courseworky > Screen_Height:
-                jewel.jewelBurst()
+                coursework.courseworkBurst()
 
-            jewel.y += 10-jewel.vx
-            jewel.x += jewel.vx
+            coursework.y += 10-coursework.velocity_x
+            coursework.x += coursework.velocity_x
             #if not Incr2 % 10:
-            #    jewel.vx = random.randrange(-20, 20)
+            #    coursework.velocity_x = random.randrange(-20, 20)
     Incr2 += 1
 
-    #print CourseworkList[0].jewelCount
+    #print CourseworkList[0].courseworkCount
 
     #if Xobject > x_coord and Xobject < x_rightcoord and Yobject > y_coord and Yobject < y_downcoord:
-    #then object coord is inside mermaid
+    #then object coord is inside player
 
 
     # --- Drawing code should go here (drawing stuff)
@@ -264,14 +255,13 @@ while not done: #while loop continues while true (i.e. while not false)
 
     Screen1.blit(Background,[0,0])
 
-    for jewel in CourseworkList:
-        if jewel.exists == 1: #checks if jewel has been 'popped'
-            #pygame.draw.circle(Screen1, green, jewel.returnPosn(), 4, 0) #displays "un-popped" jewels
-            if jewel.CourseworkSelect == 0:
-                Screen1.blit(BlueCoursework,jewel.returnPosn())
-            if jewel.CourseworkSelect == 1:
-                Screen1.blit(PinkCoursework,jewel.returnPosn())
-    #Screen1.blit(EvilCrabx2, [60,60])
+    for coursework in CourseworkList:
+        if coursework.exists == 1: #checks if coursework has been 'popped'
+            #pygame.draw.circle(Screen1, green, coursework.returnPosn(), 4, 0) #displays "un-popped" courseworks
+            if coursework.CourseworkSelect == 0:
+                Screen1.blit(Coursework_model1,coursework.returnPosn())
+            if coursework.CourseworkSelect == 1:
+                Screen1.blit(Coursework_model2,coursework.returnPosn())
     Screen1.blit(Ian, [Screen_Width/2.-Ian.get_rect()[2]/2, 0])
 
     Screen1.blit(Player_Player, [x_coord, y_coord])
