@@ -1,5 +1,6 @@
 # import a library called 'pygame'
 import pygame
+import time
 import random
 import numpy as np
 
@@ -28,8 +29,8 @@ class Coursework:
 
         noOfCourseworkTypes = len(CourseworkModelList)
         self.CourseworkSelect = random.randrange(0,noOfCourseworkTypes) #generates random int between 0 and noOfCourseworkTypes (not including noOfCourseworkTypes!)
-        #print self.CourseworkSelect
-        #print "Setting Coursework spawn position at:" , self.x, self.y
+        #print(self.CourseworkSelect)
+        #print("Setting Coursework spawn position at:" , self.x, self.y)
     
     def returnPosn(self):
         """function to return the coursework's position"""
@@ -59,7 +60,7 @@ def MakeCoursework(CourseworkList, Screen_Width, Screen_Height):
     #tempCourseworkIntance = Coursework()
     CourseworkList.append(Coursework())
     CourseworkList[TotalCourseworkNo].SpawnCourseworkPosn(Screen_Width, Screen_Height)
-    #print "TotalCourseworkNo (in func): ", TotalCourseworkNo
+    #print("TotalCourseworkNo (in func): ", TotalCourseworkNo)
     TotalCourseworkNo += 1
     
 
@@ -75,6 +76,7 @@ green = (0,255,0)
 blue = (0,0,255) 
 turqoise = (0,170,170)
 
+font001 = pygame.font.SysFont('Calibri', 25, True, False) #select font, size, bold, italics
 
 # set the width and height of the screen
 Screen_Width=1200
@@ -82,17 +84,18 @@ Screen_Height=700
 ScreenSize=[Screen_Width,Screen_Height] #[width,height]
 Screen1=pygame.display.set_mode(ScreenSize) #'Screen1' is the handle relating to this particular window
 
-pygame.display.set_caption("NGCM Simulation and Modelling - The Game") #sets game title
+pygame.display.set_caption("Project176 - The Game") #sets game title
 
 #initialise variables
 pi = 3.141592653
 
 GameScore = 0
-WinScore = 5
+WinScore = 10
 FadeoutFlag = 0
 Incr1 = 0
 TimeSinceLastCoursework = 0
-level = 1
+level = 0
+playerNumber = 0
 FrameRate=30
 
 CourseworkList=[]  #list containing instances of coursework class
@@ -124,7 +127,11 @@ Player_mid.set_colorkey(black)
 #Player_midx2 = pygame.transform.scale2x(Player_mid)
 Player_midx2 = Player_mid
 
-Coursework_model1 = pygame.image.load('gameAssets/Coursework.jpeg').convert()
+Player_Player = Player_midx2 #initialises Player_Player (i.e. the player character equal to upright player)
+
+# Loading in images
+
+Coursework_model1 = pygame.image.load('gameAssets/Coursework.jpg').convert()
 Coursework_model1.set_colorkey(black)
 
 Coursework_model2 = pygame.image.load('gameAssets/py2_icon.png').convert()
@@ -135,7 +142,35 @@ CourseworkModelList = [Coursework_model1, Coursework_model2] # Adding an image t
 Ian = pygame.image.load('gameAssets/ian_icon.png').convert()
 Ian.set_colorkey(black) 
 
-Player_Player = Player_midx2 #initialises Player_Player (i.e. the player character equal to upright player)
+alvaro = pygame.image.load('gameAssets/alvaroP_icon.png').convert()
+ale = pygame.image.load('gameAssets/aleV_icon.png').convert()
+ash = pygame.image.load('gameAssets/ashS_icon.png').convert()
+craig = pygame.image.load('gameAssets/craigR_icon.jpg').convert()
+david = pygame.image.load('gameAssets/davidL_icon.jpg').convert()
+gabriele = pygame.image.load('gameAssets/gabrieleB_icon.jpg').convert()
+hossam = pygame.image.load('gameAssets/hossamR_icon.jpg').convert()
+kieran = pygame.image.load('gameAssets/kieranS_icon.jpg').convert()
+lucy = pygame.image.load('gameAssets/lucyU_icon.jpg').convert()
+manuele = pygame.image.load('gameAssets/manueleZ_icon.jpg').convert()
+ryan = pygame.image.load('gameAssets/ryanP_icon.jpg').convert()
+thorsten = pygame.image.load('gameAssets/thorstenW_icon.jpg').convert()
+
+OriginalplayerList = [alvaro, ale, ash, craig, david, gabriele, hossam, kieran, lucy, manuele, ryan, thorsten]
+playerFullSizeList = []
+playerOffSetList = [[0, 10], [0, 10], [-40, 10], [-20, 20], [0, 10], [0, 15], [-4, 10], [-20, 10], [0, 10], [-24, 10], [-35, 10], [-135, 40]]
+playerScaleList = [3, 2, 3, 3, 2, 3, 3, 2, 2, 2, 2, 2]
+playerList = []
+playerSizeList = []
+
+for i, player in enumerate(OriginalplayerList):
+    player.set_colorkey(black)
+    playerFullSizeList.append([OriginalplayerList[i].get_rect()[2], OriginalplayerList[i].get_rect()[3]])
+    playerList.append(pygame.transform.scale(OriginalplayerList[i], (OriginalplayerList[i].get_rect()[2]/playerScaleList[i], OriginalplayerList[i].get_rect()[3]/playerScaleList[i]))) # 1/3 image size
+    playerSizeList.append([playerList[i].get_rect()[2], playerList[i].get_rect()[3]])
+
+PlayerChoiceGapSize = 250
+PlayerChoiceList_xPositions = np.arange(50+0, 50+PlayerChoiceGapSize*len(OriginalplayerList), PlayerChoiceGapSize)
+
 
 
 #setting background music/sound
@@ -153,65 +188,89 @@ clock_1 = pygame.time.Clock()
 while not done: #while loop continues while true (i.e. while not false)
     # --- Main event loop (Handling inputs)
 
-    if level == 1:  #level 1    
-        for event in pygame.event.get(): #for event in list of events (i.e. list of user inputs) 
+    for event in pygame.event.get(): #for event in list of events (i.e. list of user inputs) 
             if event.type == pygame.QUIT: #if one of these events is that the user clicked close 
                 done = True #flag to exit while loop
 
-            elif event.type == pygame.constants.USEREVENT:
+            if event.type == pygame.constants.USEREVENT:
                 pygame.mixer.music.play()
                 if FadeoutFlag == 1:
                     pygame.mixer.music.load('gameAssets/51195__the-bizniss__flute-riff.wav')
                     pygame.mixer.music.play()
 
-                #this whole if multiplexer facilitates movement of player character and sets orientation of player character
-            elif event.type == pygame.KEYDOWN: #user pressed down on a key
-                if event.key == pygame.K_LEFT:
-                    x_speed = -speedChange
-                    horizFlag = -1
-                    Player_Player = pygame.transform.rotate(Player_midx2, 90)
-                elif event.key == pygame.K_RIGHT:
-                    x_speed = speedChange
-                    horizFlag = 1
-                    Player_Player = pygame.transform.rotate(Player_midx2, -90)
-                elif event.key == pygame.K_UP:
-                    y_speed = -speedChange
-                    #Player_Player =  Player_midx2
-                elif event.key == pygame.K_DOWN:
-                    y_speed = speedChange
-                    if horizFlag == 0:
-                        Player_Player = pygame.transform.rotate(Player_midx2, 180)
-                    vertFlag = -1
-                    
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_LEFT:
-                    x_speed = 0
-                    horizFlag = 0
-                    if vertFlag == -1:
-                        Player_Player = pygame.transform.rotate(Player_midx2, 180)
-                    else:
-                        Player_Player = Player_midx2
-                elif event.key == pygame.K_RIGHT:
-                    x_speed = 0
-                    horizFlag = 0
-                    if vertFlag == -1:
-                        Player_Player = pygame.transform.rotate(Player_midx2, 180)      
-                    else:
-                        Player_Player = Player_midx2
-                elif event.key == pygame.K_UP:
-                    y_speed = 0
-                elif event.key == pygame.K_DOWN:
-                    y_speed = 0
-                    if vertFlag == -1 and horizFlag == 0:
-                        Player_Player = Player_midx2   
-                    vertFlag = 0
+            if level == 0:
+                if event.type == pygame.KEYDOWN: #user pressed down on a key
+                    if event.key == pygame.K_LEFT:
+                        playerNumber -= 1
+                    elif event.key == pygame.K_RIGHT:
+                        playerNumber += 1
+                    if playerNumber < 0:
+                        playerNumber = 0
+                    elif playerNumber >= len(OriginalplayerList):
+                        playerNumber = len(OriginalplayerList)-1
+                    time.sleep(0.5)
+                    #print(playerNumber)
+                    if event.key == pygame.K_SPACE:
+                        level += 1
 
-            
-        # --- Game logic should go here (game processing)
+            if level == 1:
+                    #this whole if multiplexer facilitates movement of player character and sets orientation of player character
+                if event.type == pygame.KEYDOWN: #user pressed down on a key
+                    if event.key == pygame.K_LEFT:
+                        x_speed = -speedChange
+                        #horizFlag = -1
+                        #Player_Player = pygame.transform.rotate(Player_midx2, 90)
+                    elif event.key == pygame.K_RIGHT:
+                        x_speed = speedChange
+                        #horizFlag = 1
+                        #Player_Player = pygame.transform.rotate(Player_midx2, -90)
+                    elif event.key == pygame.K_UP:
+                        y_speed = -speedChange
+                    elif event.key == pygame.K_DOWN:
+                        y_speed = speedChange
+                        #if horizFlag == 0:
+                        #    Player_Player = pygame.transform.rotate(Player_midx2, 180)
+                        #vertFlag = -1
+                        
+                elif event.type == pygame.KEYUP:
+                    if event.key == pygame.K_LEFT:
+                        x_speed = 0
+                        #horizFlag = 0
+                        #if vertFlag == -1:
+                        #    Player_Player = pygame.transform.rotate(Player_midx2, 180)
+                        #else:
+                        #    Player_Player = Player_midx2
+                    elif event.key == pygame.K_RIGHT:
+                        x_speed = 0
+                        #horizFlag = 0
+                        #if vertFlag == -1:
+                        #    Player_Player = pygame.transform.rotate(Player_midx2, 180)      
+                        #else:
+                        #    Player_Player = Player_midx2
+                    elif event.key == pygame.K_UP:
+                        y_speed = 0
+                    elif event.key == pygame.K_DOWN:
+                        y_speed = 0
+                        #if vertFlag == -1 and horizFlag == 0:
+                        #    Player_Player = Player_midx2   
+                        #vertFlag = 0
+
+    # --- Game logic should go here (game processing)
         
-        #pos = pygame.mouse.get_pos()
-        #mouseX = pos[0]
-        #mouseY = pos[1]
+    #pos = pygame.mouse.get_pos()
+    #mouseX = pos[0]
+    #mouseY = pos[1]
+    if level == 0: #level 0
+        Screen1.fill(black)
+        xPosPlayerChoice = -playerNumber*PlayerChoiceGapSize + Screen_Width/2 - 50
+        for i, player in enumerate(OriginalplayerList):
+            Screen1.blit(player, [(xPosPlayerChoice + PlayerChoiceList_xPositions[i] - playerFullSizeList[i][0]/2), (Screen_Height/2 - playerFullSizeList[i][1]/2)])
+
+        PickCharText = font001.render("Use arrow keys to pick a player.            Press Space to Pick a player", True, white) #Render the text. "True" means anti-aliased text.
+        Screen1.blit(PickCharText, [Screen_Width/2 - PickCharText.get_rect()[2]/2, Screen_Height/2 + 200])
+        
+
+    if level == 1:  #level 1    
      
     #These co-ords are used as hitbox for game mechanics
         x_coord = x_coord + x_speed
@@ -256,7 +315,7 @@ while not done: #while loop continues while true (i.e. while not false)
                 coursework.y += coursework.velocity_y
                 coursework.x += coursework.velocity_x
 
-        #print CourseworkList[0].courseworkCount
+        #print(CourseworkList[0].courseworkCount)
 
         #if Xobject > x_coord and Xobject < x_rightcoord and Yobject > y_coord and Yobject < y_downcoord:
         #then object coord is inside player
@@ -273,15 +332,13 @@ while not done: #while loop continues while true (i.e. while not false)
         for coursework in CourseworkList:
             if coursework.exists == 1: #checks if coursework has been 'popped'
                 #pygame.draw.circle(Screen1, green, coursework.returnPosn(), 4, 0) #displays "un-popped" courseworks
-                if coursework.CourseworkSelect == 0:
-                    Screen1.blit(Coursework_model1,coursework.returnPosn())
-                if coursework.CourseworkSelect == 1:
-                    Screen1.blit(Coursework_model2,coursework.returnPosn())
+                for i, courseworkmodel in enumerate(CourseworkModelList):
+                    if coursework.CourseworkSelect == i:
+                        Screen1.blit(courseworkmodel, coursework.returnPosn())
         Screen1.blit(Ian, [Screen_Width/2.-Ian.get_rect()[2]/2, 0])
 
         Screen1.blit(Player_Player, [x_coord, y_coord])
-
-        font001 = pygame.font.SysFont('Calibri', 25, True, False) #select font, size, bold, italics
+        Screen1.blit(playerList[playerNumber], [x_coord+playerSizeList[playerNumber][0]+playerOffSetList[playerNumber][0], y_coord-playerSizeList[playerNumber][1]+playerOffSetList[playerNumber][1]])
 
         GameScoreStr = str(GameScore)
         GameScoreTextStr = "Score: "
@@ -302,17 +359,13 @@ while not done: #while loop continues while true (i.e. while not false)
         Screen1.blit(CreditText, [CreditsX, Screen_Height/2])
         CreditsX -= 3
         Incr1+=1
-        if Incr1 > FrameRate*10: #framerate * no of seconds for credits to run 
+        if Incr1 > FrameRate*15: #framerate * no of seconds for credits to run 
             pygame.quit()
-        
-#could have lots of spaces between each person and scroll the credits across the screen
-    
-
-        
+     
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip() #command comes from flipbooks (updates screen with what we drew)
 
-    #print "Score:", GameScore
+    #print("Score:", GameScore)
 
 
     # --- Limit to 30 frames per second
