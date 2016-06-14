@@ -1,4 +1,4 @@
-name: root
+name: PygameEnviroment
 dependencies:
 - _license=1.1=py27_0
 - abstract-rendering=0.5.1=np19py27_0
@@ -23,7 +23,6 @@ dependencies:
 - cffi=1.1.0=py27_0
 - clyent=0.4.0=py27_0
 - colorama=0.3.3=py27_0
-- conda=3.18.1=py27_0
 - conda-build=1.14.1=py27_0
 - conda-env=2.4.2=py27_0
 - configobj=5.0.6=py27_0
